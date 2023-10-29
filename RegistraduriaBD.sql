@@ -1,222 +1,243 @@
-CREATE DATABASE Registraduría_BD;
+CREATE DATABASE RegistradurÃ­a_BD;
 
 
---Los siguientes son los ítems que deben desarrollar para el proyecto asignado desde el principio del semestre, 
---y que deben estar listos para el 2 de Noviembre, día del Taller No. 5:
+--Los siguientes son los Ã­tems que deben desarrollar para el proyecto asignado desde el principio del semestre, 
+--y que deben estar listos para el 2 de Noviembre, dÃ­a del Taller No. 5:
 
---Modelo Conceptual (Modelo Entidad Relación) -- Realizado
---Modelo Lógico (Modelo Relacional, en papel)
---Modelo Físico (Base de Datos en SQL Server) -- Realizado
+--Modelo Conceptual (Modelo Entidad RelaciÃ³n) -- Realizado
+--Modelo LÃ³gico (Modelo Relacional, en papel)
+--Modelo FÃ­sico (Base de Datos en SQL Server) -- Realizado
 
---El Modelo Físico incluye lo siguiente, todo hecho por código:
+--El Modelo FÃ­sico incluye lo siguiente, todo hecho por cÃ³digo:
 
---Tablas creadas y relacionadas entre sí.
---A cada tabla, insertarle mínimo 4 tuplas. -- Realizado
---Crear los check constraints que crean convenientes, dentro de la lógica del problema.
---Deben justificar bien la utilidad o beneficio de dichos checks.
---Hacer 4 consultas útiles para el usuario, que implementen los 4 tipos de joins que hay. 
---Cada consulta debe ir con su respectivo enunciado, y debe generar algún resultado.
---Hacer 2 consultas que utilice teoría de conjuntos. Deben ir con su enunciado y producir algún resultado.
---Implementar dos vistas útiles para el negocio. Dichas vistas deben ser actualizables, y deben tener 2 tablas base como mínimo.
+--Tablas creadas y relacionadas entre sÃ­.
+--A cada tabla, insertarle mÃ­nimo 4 tuplas. -- Realizado
+--Crear los check constraints que crean convenientes, dentro de la lÃ³gica del problema. --Realizando
+--Deben justificar bien la utilidad o beneficio de dichos checks. --Realizando
+--Hacer 4 consultas Ãºtiles para el usuario, que implementen los 4 tipos de joins que hay. 
+--Cada consulta debe ir con su respectivo enunciado, y debe generar algÃºn resultado.
+--Hacer 2 consultas que utilice teorÃ­a de conjuntos. Deben ir con su enunciado y producir algÃºn resultado.
+--Implementar dos vistas Ãºtiles para el negocio. Dichas vistas deben ser actualizables, y deben tener 2 tablas base como mÃ­nimo.
 --Generar los procedimientos almacenados necesarios para hacerle CRUD a las tablas del proyecto. 
 --Estos procedimientos deben estar debidamente documentados.
 --Generar una necesidad dentro del negocio que implique hacer un procedimiento almacenado que se integre con
 --funciones de usuario y disparen triggers. No olviden usar control de errores, usar cursores en lo posible y conservar la atomicidad.
 
-CREATE TABLE Padrino_Político (
-	Código_Padrino Int Primary Key Not Null,
+CREATE TABLE Padrino_PolÃ­tico (
+	CÃ³digo_Padrino Int Primary Key Not Null,
 	Nombre Varchar (50) Not Null,
-	Posición Varchar (50)
+	PosiciÃ³n Varchar (50)
 );
 
-CREATE TABLE Partido_Político (
-	Código_Partido Int Primary Key Not Null,
+CREATE TABLE Partido_PolÃ­tico (
+	CÃ³digo_Partido Int Primary Key Not Null,
 	Nombre Varchar (50) Not Null,
-	Año_Fundación Date Not Null,
-	Número_Integrantes Int Not Null,
+	AÃ±o_FundaciÃ³n Date Not Null,
+	NÃºmero_Integrantes Int Not Null,
 );
 
 CREATE TABLE Candidato (
-	Código_Candidato Int Primary Key Not Null,
-	Nombre Varchar (50) Not NUll,
-	Edad Int,
-	FK_Cod_Partido Int
-	Foreign Key (FK_Cod_Partido) References Partido_Político (Código_Partido)
+    CÃ³digo_Candidato Int Not Null,
+    Cedula Int Not Null,
+    Nombre Varchar (50) Not NUll,
+    Edad Int,
+    FK_Cod_Partido Int,
+    Primary Key (CÃ³digo_Candidato, Cedula),
+    Foreign Key (FK_Cod_Partido) References Partido_PolÃ­tico (CÃ³digo_Partido)
 );
 
-CREATE TABLE Asociación_Candidato_Padrino (
-	Código_Asociación Int Primary Key Not Null,
+CREATE TABLE AsociaciÃ³n_Candidato_Padrino (
+	CÃ³digo_AsociaciÃ³n Int Primary Key Not Null,
 	FK_Cod_Cand Int,
+	FK_Cedula_Cand Int,
 	FK_Cod_Padrino Int,
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato),
-	Foreign Key (FK_Cod_Padrino) References Padrino_Político (Código_Padrino)
+	Foreign Key (FK_Cod_Cand, FK_Cedula_Cand) References Candidato (CÃ³digo_Candidato, Cedula),
+	Foreign Key (FK_Cod_Padrino) References Padrino_PolÃ­tico (CÃ³digo_Padrino)
 );
 
 CREATE TABLE HojaDeVida (
-	Código_HojaDeVida Int Primary Key Not Null,
-	Senador Varchar (50) Not Null,
-	Año_Inicio_Candidato Date Not Null,
-	Cant_Suspensiones Int Not Null,
-	FK_Cod_Cand Int,
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato)
+    CÃ³digo_HojaDeVida Int Primary Key Not Null,
+    Senador Varchar (50) Not Null,
+    AÃ±o_Inicio_Candidato Date Not Null,
+    Cant_Suspensiones Int Not Null,
+    FK_Cod_Cand Int,
+    FK_Cedula_Cand Int,
+    Foreign Key (FK_Cod_Cand, FK_Cedula_Cand) References Candidato (CÃ³digo_Candidato, Cedula)
 );
 
-CREATE TABLE LugaresVotación (
-	Código_Lugar Int Primary Key Not Null,
+CREATE TABLE LugaresVotaciÃ³n (
+	CÃ³digo_Lugar Int Primary Key Not Null,
 	Nombre Varchar (50) Not Null
 );
 
-CREATE TABLE Institución_Oficial (
-	Código_Lugar Int Primary Key Not Null,
+CREATE TABLE InstituciÃ³n_Oficial (
+	CÃ³digo_Lugar Int Primary Key Not Null,
 	Grado_Max_Estudio Int Not Null,
-	Foreign Key (Código_Lugar) References LugaresVotación (Código_Lugar)
+	Foreign Key (CÃ³digo_Lugar) References LugaresVotaciÃ³n (CÃ³digo_Lugar)
 );
 
-CREATE TABLE Institución_Educativa (
-	Código_Lugar Int Primary Key Not Null,
-	Número_Rad_Fundación Int Not Null,
-	Foreign Key (Código_Lugar) References LugaresVotación (Código_Lugar)
+CREATE TABLE InstituciÃ³n_Educativa (
+	CÃ³digo_Lugar Int Primary Key Not Null,
+	NÃºmero_Rad_FundaciÃ³n Int Not Null,
+	Foreign Key (CÃ³digo_Lugar) References LugaresVotaciÃ³n (CÃ³digo_Lugar)
 );
 
 CREATE TABLE Elector (
-	Cédula Int Primary Key Not Null,
-	Edad Int Not Null,
-	Nombre Varchar (50) Not Null,
-	FK_Cod_Cand Int,
-	FK_Cod_Lug_Vot Int
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato),
-	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotación (Código_Lugar)
+    CÃ©dula Int Primary Key Not Null,
+    Edad Int Not Null,
+    Nombre Varchar (50) Not Null,
+    FK_Cod_Cand Int,
+    FK_Cedula_Cand Int,
+    FK_Cod_Lug_Vot Int,
+    Foreign Key (FK_Cod_Cand, FK_Cedula_Cand) References Candidato (CÃ³digo_Candidato, Cedula),
+    Foreign Key (FK_Cod_Lug_Vot) References LugaresVotaciÃ³n (CÃ³digo_Lugar)
 );
 
 CREATE TABLE Jurado (
-	Cédula Int Primary Key Not Null,
+	CÃ©dula Int Primary Key Not Null,
 	Nombre Varchar (50) Not Null,
 	FK_Cod_Lug_Vot Int,
-	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotación (Código_Lugar)
+	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotaciÃ³n (CÃ³digo_Lugar)
 );
 
-CREATE TABLE MesaVotación (
-	Número_Mesa Int Not Null,
-	Tamaño Int,
-	Ubicación_Institución Varchar (100) Not Null,
+CREATE TABLE MesaVotaciÃ³n (
+	NÃºmero_Mesa Int Not Null,
+	TamaÃ±o Int,
+	UbicaciÃ³n_InstituciÃ³n Varchar (100) Not Null,
 	FK_Cod_Lug_Vot Int
-	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotación (Código_Lugar)
+	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotaciÃ³n (CÃ³digo_Lugar)
 );
 
--- Inserción en la tabla Padrino_Político
-INSERT INTO Padrino_Político (Código_Padrino, Nombre, Posición)
-VALUES (1, 'Juan Pérez', 'Senador'),
-       (2, 'Ana Gómez', 'Diputado'),
-       (3, 'Carlos Rodríguez', 'Gobernador'),
-       (4, 'María López', 'Alcalde');
+-- InserciÃ³n en la tabla Padrino_PolÃ­tico
+INSERT INTO Padrino_PolÃ­tico (CÃ³digo_Padrino, Nombre, PosiciÃ³n)
+VALUES (1, 'Juan PÃ©rez', 'Senador'),
+       (2, 'Ana GÃ³mez', 'Diputado'),
+       (3, 'Carlos RodrÃ­guez', 'Gobernador'),
+       (4, 'MarÃ­a LÃ³pez', 'Alcalde');
 
--- Inserción en la tabla Partido_Político
-INSERT INTO Partido_Político (Código_Partido, Nombre, Año_Fundación, Número_Integrantes)
+-- InserciÃ³n en la tabla Partido_PolÃ­tico
+INSERT INTO Partido_PolÃ­tico (CÃ³digo_Partido, Nombre, AÃ±o_FundaciÃ³n, NÃºmero_Integrantes)
 VALUES (101, 'Partido A', '1990-01-01', 5000),
        (102, 'Partido B', '2000-03-15', 7500),
        (103, 'Partido C', '1995-11-20', 6000),
        (104, 'Partido D', '2005-07-10', 8500);
 
--- Inserción en la tabla Candidato
-INSERT INTO Candidato (Código_Candidato, Nombre, Edad, FK_Cod_Partido)
-VALUES (1001, 'Laura Martínez', 35, 101),
-       (1002, 'Roberto Sánchez', 42, 103),
-       (1003, 'Elena García', 38, 102),
-       (1004, 'Mario González', 45, 104);
+-- InserciÃ³n en la tabla Candidato
+INSERT INTO Candidato (CÃ³digo_Candidato, Cedula, Nombre, Edad, FK_Cod_Partido)
+VALUES (1001, 50, 'Laura MartÃ­nez', 35, 101),
+       (1002, 40, 'Roberto SÃ¡nchez', 42, 103),
+       (1003, 30, 'Elena GarcÃ­a', 38, 102),
+       (1004, 20, 'Mario GonzÃ¡lez', 45, 104);
 
--- Inserción en la tabla Asociación_Candidato_Padrino
-INSERT INTO Asociación_Candidato_Padrino (Código_Asociación, FK_Cod_Cand, FK_Cod_Padrino)
-VALUES (201, 1001, 1),
-       (202, 1002, 2),
-       (203, 1003, 3),
-       (204, 1004, 4);
+-- InserciÃ³n en la tabla AsociaciÃ³n_Candidato_Padrino
+INSERT INTO AsociaciÃ³n_Candidato_Padrino (CÃ³digo_AsociaciÃ³n, FK_Cod_Cand, FK_Cedula_Cand, FK_Cod_Padrino)
+VALUES (201, 1001, 50, 1),
+       (202, 1002, 40, 2),
+       (203, 1003, 30, 3),
+       (204, 1004, 20, 4);
 
--- Inserción en la tabla HojaDeVida
-INSERT INTO HojaDeVida (Código_HojaDeVida, Senador, Año_Inicio_Candidato, Cant_Suspensiones, FK_Cod_Cand)
-VALUES (301, 'No', '2010-01-01', 0, 1001),
-       (302, 'Si', '2015-02-15', 2, 1002),
-       (303, 'No', '2009-06-20', 1, 1003),
-       (304, 'Si', '2018-11-10', 3, 1004);
+-- InserciÃ³n en la tabla HojaDeVida
+INSERT INTO HojaDeVida (CÃ³digo_HojaDeVida, Senador, AÃ±o_Inicio_Candidato, Cant_Suspensiones, FK_Cod_Cand, FK_Cedula_Cand)
+VALUES (301, 'No', '2010-01-01', 0, 1001, 50),
+       (302, 'Si', '2015-02-15', 2, 1002, 40),
+       (303, 'No', '2009-06-20', 1, 1003, 30),
+       (304, 'Si', '2018-11-10', 3, 1004, 20);
 
--- Inserción en la tabla LugaresVotación
-INSERT INTO LugaresVotación (Código_Lugar, Nombre)
-VALUES (501, 'Colegio A'),
-       (502, 'Instituto B'),
-       (503, 'Escuela C'),
-       (504, 'Centro Comunitario D');
+-- InserciÃ³n en la tabla LugaresVotaciÃ³n
+INSERT INTO LugaresVotaciÃ³n (CÃ³digo_Lugar, Nombre)
+VALUES (501, 'Escuela de EducaciÃ³n Avanzada "Ricardo Palma"'),
+       (502, 'Instituto TÃ©cnico Industrial "Pedro Domingo Murillo"'),
+       (503, 'Colegio de la Comuna 8 "El Salvador"'),
+       (504, 'Centro Comunitario "San Javier"'),
+       (505, 'Escuela "Manuela BeltrÃ¡n"'),
+       (506, 'InstituciÃ³n Educativa "La Candelaria"'),
+       (507, 'Colegio Nacional "Federico GarcÃ­a Lorca"'),
+       (508, 'Escuela de Arte y Oficios "San Ignacio"');
 
--- Inserción en la tabla Institución_Oficial
-INSERT INTO Institución_Oficial (Código_Lugar, Grado_Max_Estudio)
+-- InserciÃ³n en la tabla InstituciÃ³n_Oficial
+INSERT INTO InstituciÃ³n_Oficial (CÃ³digo_Lugar, Grado_Max_Estudio)
 VALUES (501, 08),
        (502, 09),
        (503, 10),
        (504, 11);
 
--- Inserción en la tabla Institución_Educativa
-INSERT INTO Institución_Educativa (Código_Lugar, Número_Rad_Fundación)
-VALUES (501, 12345),
-       (502, 67890),
-       (503, 54321),
-       (504, 98765);
+-- InserciÃ³n en la tabla InstituciÃ³n_Educativa
+INSERT INTO InstituciÃ³n_Educativa (CÃ³digo_Lugar, NÃºmero_Rad_FundaciÃ³n)
+VALUES (505, 12345),
+       (506, 67890),
+       (507, 54321),
+       (508, 98765);
 
--- Inserción en la tabla Elector
-INSERT INTO Elector (Cédula, Edad, Nombre, FK_Cod_Cand, FK_Cod_Lug_Vot)
-VALUES (100001, 30, 'Pedro Navaja', 1001, 501),
-       (100002, 45, 'Carlos Grisales', 1002, 502),
-       (100003, 28, 'Andrea Vélez', 1003, 503),
-       (100004, 55, 'Juan Maldonado', 1004, 504);
+-- InserciÃ³n en la tabla Elector
+INSERT INTO Elector (CÃ©dula, Edad, Nombre, FK_Cod_Cand, FK_Cedula_Cand, FK_Cod_Lug_Vot)
+VALUES (100001, 30, 'Pedro Navaja', 1001, 50, 501),
+       (100002, 45, 'Carlos Grisales', 1002, 40, 502),
+       (100003, 28, 'Andrea VÃ©lez', 1003, 30, 503),
+       (100004, 55, 'Juan Maldonado', 1004, 20, 504),
+       (100005, 32, 'Luisa GÃ³mez', 1001, 50, 505),
+       (100006, 41, 'Sandra LÃ³pez', 1002, 40, 506),
+       (100007, 29, 'Diego SÃ¡nchez', 1003, 30, 507),
+       (100008, 50, 'MarÃ­a RodrÃ­guez', 1004, 20, 508);
 
--- Inserción en la tabla Jurado
-INSERT INTO Jurado (Cédula, Nombre, FK_Cod_Lug_Vot)
-VALUES (200001, 'Andrés Gutiérrez', 501),
-       (200002, 'Camilo Martínez', 502),
+-- InserciÃ³n en la tabla Jurado
+INSERT INTO Jurado (CÃ©dula, Nombre, FK_Cod_Lug_Vot)
+VALUES (200001, 'AndrÃ©s GutiÃ©rrez', 501),
+       (200002, 'Camilo MartÃ­nez', 502),
        (200003, 'Juliana Arboleda', 503),
-       (200004, 'Daniel Gonzáles', 504);
+       (200004, 'Daniel GonzÃ¡les', 504),
+       (200005, 'MarÃ­a RamÃ­rez', 505),
+       (200006, 'Juan PÃ©rez', 506),
+       (200007, 'Luis Torres', 507),
+       (200008, 'Ana JimÃ©nez', 508);
 
--- Inserción en la tabla MesaVotación
-INSERT INTO MesaVotación (Número_Mesa, Tamaño, Ubicación_Institución, FK_Cod_Lug_Vot)
-VALUES (1, 8, 'Colegio A - Salón 1', 501),
-       (2, 10, 'Instituto B - Gimnasio', 502),
-       (3, 5, 'Escuela C - Patio', 503),
-       (4, 4, 'Centro Comunitario D - Sala 2', 504);
+-- InserciÃ³n en la tabla MesaVotaciÃ³n
+INSERT INTO MesaVotaciÃ³n (NÃºmero_Mesa, TamaÃ±o, UbicaciÃ³n_InstituciÃ³n, FK_Cod_Lug_Vot)
+VALUES (1, 8, 'SalÃ³n 1', 501),
+       (2, 7, 'Gimnasio', 502),
+       (3, 5, 'Patio', 503),
+       (4, 4, 'Sala 2', 504),
+       (5, 4, 'SalÃ³n de Actos', 505),
+       (6, 6, 'CafeterÃ­a', 506),
+       (7, 4, 'Patio Central', 507),
+       (8, 5, 'Sala de Reuniones', 508);
 
 -- Crear Check constraint necesarios
 
---Justificación: Esta restricción asegura que la edad del elector sea mayor o igual a 18 años,
+--JustificaciÃ³n: Esta restricciÃ³n asegura que la edad del elector sea mayor o igual a 18 aÃ±os,
 --lo que es un requisito para ser elegible para votar en muchas elecciones. 
 --Evita que se ingresen electores menores de edad.
 
-ALTER TABLE ELECTOR ADD CHECK (Edad >= 18 And Edad <=130)
+ALTER TABLE ELECTOR ADD CHECK (Edad >= 18)
 
---Justificación: Esta restricción asegura que el año de fundación del partido no sea en el futuro y esté limitado 
+--JustificaciÃ³n: Esta restricciÃ³n asegura que el aÃ±o de fundaciÃ³n del partido no sea en el futuro y estÃ© limitado 
 --a la fecha actual o anterior. Evita la entrada de datos incorrectos o futuros.
 
-ALTER TABLE Partido_Político ADD CHECK (Año_Fundación <= YEAR(GETDATE()))
+ALTER TABLE Partido_PolÃ­tico ADD CHECK (AÃ±o_FundaciÃ³n <= YEAR(GETDATE()))
 
---Justificación: Garantiza que el tamaño de la mesa de votación sea un valor positivo y 
---evita la entrada de mesas con tamaños no válidos.
+--JustificaciÃ³n: Garantiza que el tamaÃ±o de la mesa de votaciÃ³n sea un valor positivo y 
+--evita la entrada de mesas con tamaÃ±os no vÃ¡lidos.
 
-ALTER TABLE Mesas_Votación ADD CHECK (Tamaño > 0)
+ALTER TABLE Mesas_VotaciÃ³n ADD CHECK (TamaÃ±o > 0)
 
---Justificación: Asegura que la cantidad de suspensiones en la hoja de vida sea un valor no negativo.
---Es importante para llevar un registro preciso de suspensiones en la carrera política de un candidato.
+--JustificaciÃ³n: Asegura que la cantidad de suspensiones en la hoja de vida sea un valor no negativo.
+--Es importante para llevar un registro preciso de suspensiones en la carrera polÃ­tica de un candidato.
 
 ALTER TABLE HojaDeVida ADD CHECK (Cant_Suspensiones >= 0)
 
---Justificación: Garantiza que el número de radicado de fundación sea un valor positivo y 
---evita la entrada de datos no válidos para las instituciones educativas.
+--JustificaciÃ³n: Garantiza que el nÃºmero de radicado de fundaciÃ³n sea un valor positivo y 
+--evita la entrada de datos no vÃ¡lidos para las instituciones educativas.
 
-ALTER TABLE Institución_Educativa ADD CHECK (Número_Rad_Fundación > 0)
+ALTER TABLE InstituciÃ³n_Educativa ADD CHECK (NÃºmero_Rad_FundaciÃ³n > 0)
 
---Justificación: Asegura que el campo "Cédula" en la tabla Elector tenga una longitud de 7 o 10 dígitos,
---lo que es común para cédulas en muchos países. Evita la entrada de cédulas con longitudes incorrectas.
+--JustificaciÃ³n: Asegura que el campo "CÃ©dula" en la tabla Elector tenga una longitud de 7 o 10 dÃ­gitos,
+--lo que es comÃºn para cÃ©dulas en muchos paÃ­ses. Evita la entrada de cÃ©dulas con longitudes incorrectas.
 
-ALTER TABLE Elector ADD CHECK (LEN(Cédula) IN (7, 10))
+ALTER TABLE Elector ADD CHECK (LEN(CÃ©dula) IN (7, 10))
 
---Justificación: Asegura que el campo "Cédula" en la tabla Jurado tenga una longitud de 7 o 10 dígitos,
---lo que es común para cédulas en muchos países. Evita la entrada de cédulas con longitudes incorrectas.
+--JustificaciÃ³n: Asegura que el campo "CÃ©dula" en la tabla Jurado tenga una longitud de 7 o 10 dÃ­gitos,
+--lo que es comÃºn para cÃ©dulas en muchos paÃ­ses. Evita la entrada de cÃ©dulas con longitudes incorrectas.
 
-ALTER TABLE Jurado ADD CHECK (LEN(Cédula) IN (7, 10))
+ALTER TABLE Jurado ADD CHECK (LEN(CÃ©dula) IN (7, 10))
 
 
 
