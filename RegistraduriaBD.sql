@@ -89,7 +89,7 @@ CREATE TABLE Elector (
 	FK_Ced_Cand Int,
 	FK_Cod_Lug_Vot Int,
 	Foreign Key (FK_Cod_Cand, FK_Ced_Cand) References Candidato (Código_Candidato, Cédula),
- Foreign Key (FK_Cod_Lug_Vot) References Lugaresvotación (Código_Lugar)
+      Foreign Key (FK_Cod_Lug_Vot) References Lugaresvotación (Código_Lugar)
 );
 
 CREATE TABLE Jurado (
