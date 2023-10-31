@@ -1,6 +1,5 @@
 CREATE DATABASE Registraduría_BD;
 
-
 --Los siguientes son los ítems que deben desarrollar para el proyecto asignado desde el principio del semestre, 
 --y que deben estar listos para el 2 de Noviembre, día del Taller No. 5:
 
@@ -37,18 +36,21 @@ CREATE TABLE Partido_Político (
 );
 
 CREATE TABLE Candidato (
-	Código_Candidato Int Primary Key Not Null,
+	Código_Candidato Int Not Null,
+	Cédula Int Not Null,
 	Nombre Varchar (50) Not NUll,
 	Edad Int,
 	FK_Cod_Partido Int
+	Primary Key (Código_Candidato, Cédula),
 	Foreign Key (FK_Cod_Partido) References Partido_Político (Código_Partido)
 );
 
 CREATE TABLE Asociación_Candidato_Padrino (
 	Código_Asociación Int Primary Key Not Null,
 	FK_Cod_Cand Int,
+	FK_Ced_Cand Int,
 	FK_Cod_Padrino Int,
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato),
+	Foreign Key (FK_Cod_Cand, FK_Ced_Cand) References Candidato (Código_Candidato, Cédula),
 	Foreign Key (FK_Cod_Padrino) References Padrino_Político (Código_Padrino)
 );
 
@@ -58,7 +60,8 @@ CREATE TABLE HojaDeVida (
 	Año_Inicio_Candidato Date Not Null,
 	Cant_Suspensiones Int Not Null,
 	FK_Cod_Cand Int,
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato)
+	FK_Ced_Cand Int,
+	Foreign Key (FK_Cod_Cand, FK_Ced_Cand) References Candidato (Código_Candidato, Cédula)
 );
 
 CREATE TABLE LugaresVotación (
@@ -83,9 +86,9 @@ CREATE TABLE Elector (
 	Edad Int Not Null,
 	Nombre Varchar (50) Not Null,
 	FK_Cod_Cand Int,
-	FK_Cod_Lug_Vot Int
-	Foreign Key (FK_Cod_Cand) References Candidato (Código_Candidato),
-	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotación (Código_Lugar)
+	FK_Ced_Cand Int,
+	FK_Cod_Lug_Vot Int,
+	Foreign Key (FK_Cod_Cand, FK_Ced_Cand) References Candidato (Código_Candidato, Cédula)
 );
 
 CREATE TABLE Jurado (
@@ -118,32 +121,37 @@ VALUES (101, 'Partido A', '1990-01-01', 5000),
        (104, 'Partido D', '2005-07-10', 8500);
 
 -- Inserción en la tabla Candidato
-INSERT INTO Candidato (Código_Candidato, Nombre, Edad, FK_Cod_Partido)
-VALUES (1001, 'Laura Martínez', 35, 101),
-       (1002, 'Roberto Sánchez', 42, 103),
-       (1003, 'Elena García', 38, 102),
-       (1004, 'Mario González', 45, 104);
+INSERT INTO Candidato (Código_Candidato, Cédula, Nombre, Edad, FK_Cod_Partido)
+VALUES (1001, 50, 'Laura Martínez', 35, 101),
+       (1002, 40, 'Roberto Sánchez', 42, 103),
+       (1003, 30, 'Elena García', 38, 102),
+       (1004, 20, 'Mario González', 45, 104);
 
 -- Inserción en la tabla Asociación_Candidato_Padrino
-INSERT INTO Asociación_Candidato_Padrino (Código_Asociación, FK_Cod_Cand, FK_Cod_Padrino)
-VALUES (201, 1001, 1),
-       (202, 1002, 2),
-       (203, 1003, 3),
-       (204, 1004, 4);
+INSERT INTO Asociación_Candidato_Padrino (Código_Asociación, FK_Cod_Cand, FK_Ced_Cand, FK_Cod_Padrino)
+VALUES (201, 1001, 50,  1),
+       (202, 1002, 40, 2),
+       (203, 1003, 30, 3),
+       (204, 1004, 20, 4);
 
 -- Inserción en la tabla HojaDeVida
-INSERT INTO HojaDeVida (Código_HojaDeVida, Senador, Año_Inicio_Candidato, Cant_Suspensiones, FK_Cod_Cand)
-VALUES (301, 'No', '2010-01-01', 0, 1001),
-       (302, 'Si', '2015-02-15', 2, 1002),
-       (303, 'No', '2009-06-20', 1, 1003),
-       (304, 'Si', '2018-11-10', 3, 1004);
+INSERT INTO HojaDeVida (Código_HojaDeVida, Senador, Año_Inicio_Candidato, Cant_Suspensiones, FK_Cod_Cand, FK_Ced_Cand)
+VALUES (301, 'No', '2010-01-01', 0, 1001, 50),
+       (302, 'Si', '2015-02-15', 2, 1002, 40),
+       (303, 'No', '2009-06-20', 1, 1003, 30),
+       (304, 'Si', '2018-11-10', 3, 1004, 20);
 
 -- Inserción en la tabla LugaresVotación
 INSERT INTO LugaresVotación (Código_Lugar, Nombre)
-VALUES (501, 'Colegio A'),
-       (502, 'Instituto B'),
-       (503, 'Escuela C'),
-       (504, 'Centro Comunitario D');
+VALUES 
+    (501, 'Colegio A'),
+    (502, 'Instituto B'),
+    (503, 'Escuela C'),
+    (504, 'Centro Comunitario D'),
+    (505, 'Colegio San José'),
+    (506, 'Colegio La Salle'),
+    (507, 'Institución Educativa Antioquia'),
+    (508, 'Colegio Pío XII');
 
 -- Inserción en la tabla Institución_Oficial
 INSERT INTO Institución_Oficial (Código_Ins_Ofi, Grado_Max_Estudio)
@@ -154,31 +162,49 @@ VALUES (501, 08),
 
 -- Inserción en la tabla Institución_Educativa
 INSERT INTO Institución_Educativa (Código_Ins_Edu, Número_Rad_Fundación)
-VALUES (501, 12345),
-       (502, 67890),
-       (503, 54321),
-       (504, 98765);
+VALUES (505, 12345),
+       (506, 67890),
+       (507, 54321),
+       (508, 98765);
 
 -- Inserción en la tabla Elector
-INSERT INTO Elector (Cédula, Edad, Nombre, FK_Cod_Cand, FK_Cod_Lug_Vot)
-VALUES (100001, 30, 'Pedro Navaja', 1001, 501),
-       (100002, 45, 'Carlos Grisales', 1002, 502),
-       (100003, 28, 'Andrea Vélez', 1003, 503),
-       (100004, 55, 'Juan Maldonado', 1004, 504);
+
+INSERT INTO Elector (Cédula, Edad, Nombre, FK_Cod_Cand, FK_Ced_Cand, FK_Cod_Lug_Vot)
+VALUES 
+    (100001, 30, 'Pedro Navaja', 1001, 50, 501),
+    (100002, 45, 'Carlos Grisales', 1002, 40, 502),
+    (100003, 28, 'Andrea Vélez', 1003, 30, 503),
+    (100004, 55, 'Juan Maldonado', 1004, 20, 504),
+    (100005, 32, 'Sofía Ramírez', 1001, 50, 505),
+    (100006, 48, 'Marcelo Soto', 1002, 40, 506),
+    (100007, 29, 'Luisa Medina', 1003, 30, 507),
+    (100008, 50, 'Miguel Castro', 1004, 20, 508);
 
 -- Inserción en la tabla Jurado
 INSERT INTO Jurado (Cédula, Nombre, FK_Cod_Lug_Vot)
-VALUES (200001, 'Andrés Gutiérrez', 501),
-       (200002, 'Camilo Martínez', 502),
-       (200003, 'Juliana Arboleda', 503),
-       (200004, 'Daniel Gonzáles', 504);
+VALUES 
+    (200001, 'Andrés Gutiérrez', 501),
+    (200002, 'Camilo Martínez', 502),
+    (200003, 'Juliana Arboleda', 503),
+    (200004, 'Daniel Gonzáles', 504),
+    (200005, 'Ana López', 505),
+    (200006, 'Pablo Ríos', 506),
+    (200007, 'Isabel Mendoza', 507),
+    (200008, 'Luis Rodríguez', 508);
+
 
 -- Inserción en la tabla MesaVotación
 INSERT INTO MesaVotación (Número_Mesa, Tamaño, Ubicación_Institución, FK_Cod_Lug_Vot)
-VALUES (1, 8, 'Colegio A - Salón 1', 501),
-       (2, 10, 'Instituto B - Gimnasio', 502),
-       (3, 5, 'Escuela C - Patio', 503),
-       (4, 4, 'Centro Comunitario D - Sala 2', 504);
+VALUES 
+    (1, 4, 'Salón de Actos', 501),
+    (2, 5, 'Gimnasio', 502),
+    (3, 5, 'Cafetería', 503),
+    (4, 4, 'Biblioteca', 504),
+    (5, 4, 'Cancha', 505),
+    (6, 6, 'Salón 3', 506),
+    (7, 4, 'Patio', 507),
+    (8, 5, 'Sala de Profesores', 508);
+
 
 -- Crear Check constraint necesarios
 
@@ -217,6 +243,9 @@ ALTER TABLE Elector ADD CHECK (LEN(Cédula) IN (7, 10))
 --lo que es común para cédulas en muchos países. Evita la entrada de cédulas con longitudes incorrectas.
 
 ALTER TABLE Jurado ADD CHECK (LEN(Cédula) IN (7, 10))
+
+
+
 
 
 
