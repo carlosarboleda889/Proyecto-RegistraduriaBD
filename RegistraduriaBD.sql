@@ -1,10 +1,14 @@
 CREATE DATABASE Registraduria_BD;
+GO
+
+USE Registraduria_BD;
+GO
 
 --Los siguientes son los ítems que deben desarrollar para el proyecto asignado desde el principio del semestre, 
 --y que deben estar listos para el 2 de Noviembre, día del Taller No. 5:
 
 --Modelo Conceptual (Modelo Entidad Relación) -- Realizado
---Modelo Lógico (Modelo Relacional, en papel) 
+--Modelo Lógico (Modelo Relacional, en papel)
 --Modelo Físico (Base de Datos en SQL Server) -- Realizado
 
 --El Modelo Físico incluye lo siguiente, todo hecho por código:
@@ -27,6 +31,7 @@ CREATE TABLE Padrino_Politico (
 	Nombre Varchar (50) Not Null,
 	Posicion Varchar (50) Not Null
 );
+GO
 
 CREATE TABLE Partido_Politico (
 	Codigo_Partido Int Primary Key Not Null,
@@ -34,6 +39,7 @@ CREATE TABLE Partido_Politico (
 	Ano_Fundacion Date Not Null,
 	Numero_Integrantes Int
 );
+GO
 
 CREATE TABLE Candidato (
 	Codigo_Candidato Int Primary Key Not Null,
@@ -43,6 +49,7 @@ CREATE TABLE Candidato (
 	FK_Cod_Partido Int Not Null,
 	Foreign Key (FK_Cod_Partido) References Partido_Politico (Codigo_Partido)
 );
+GO
 
 CREATE TABLE Asociacion_Candidato_Padrino (
 	Codigo_Asociacion Int Primary Key Not Null,
@@ -51,6 +58,7 @@ CREATE TABLE Asociacion_Candidato_Padrino (
 	Foreign Key (FK_Cod_Cand) References Candidato (Codigo_Candidato),
 	Foreign Key (FK_Cod_Padrino) References Padrino_Politico (Codigo_Padrino)
 );
+GO
 
 CREATE TABLE HojaDeVida (
 	Codigo_HojaDeVida Int Primary Key Not Null,
@@ -60,23 +68,30 @@ CREATE TABLE HojaDeVida (
 	FK_Cod_Cand Int,
 	Foreign Key (FK_Cod_Cand) References Candidato (Codigo_Candidato)
 );
+GO
 
 CREATE TABLE LugaresVotacion (
 	Codigo_Lugar Int Primary Key Not Null,
-	Nombre Varchar (50) Not Null
+	Nombre Varchar (50) Not Null,
+	Direccion Varchar (100) Not Null,
+	Departamento Varchar (80) Not Null,
+	Municipio Varchar (80) Not Null
 );
+GO
 
 CREATE TABLE Institucion_Oficial (
 	Codigo_Ins_Ofi Int Primary Key Not Null,
 	Grado_Max_Estudio Int Not Null,
 	Foreign Key (Codigo_Ins_Ofi) References LugaresVotacion (Codigo_Lugar)
 );
+GO
 
 CREATE TABLE Institucion_Educativa (
 	Codigo_Ins_Edu Int Primary Key Not Null,
 	Numero_Rad_Fundacion Int Not Null,
 	Foreign Key (Codigo_Ins_Edu) References LugaresVotacion (Codigo_Lugar)
 );
+GO
 
 CREATE TABLE Elector (
 	Cedula Int Primary Key Not Null,
@@ -87,13 +102,16 @@ CREATE TABLE Elector (
 	Foreign Key (FK_Cod_Cand) References Candidato (Codigo_Candidato),
 	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotacion (Codigo_Lugar)
 );
+GO
 
 CREATE TABLE Jurado (
 	Cedula Int Primary Key Not Null,
 	Nombre Varchar (50) Not Null,
+	Rol Varchar (50) Not Null,
 	FK_Cod_Lug_Vot Int,
 	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotacion (Codigo_Lugar)
 );
+GO
 
 CREATE TABLE MesaVotacion (
 	Numero_Mesa Int Not Null,
@@ -103,6 +121,7 @@ CREATE TABLE MesaVotacion (
 	Primary Key (Numero_Mesa, FK_Cod_Lug_Vot), 
 	Foreign Key (FK_Cod_Lug_Vot) References LugaresVotacion (Codigo_Lugar)
 );
+GO
 
 -- Insercion en la tabla Padrino_Politico
 INSERT INTO Padrino_Politico (Codigo_Padrino, Nombre, Posicion)
@@ -110,6 +129,7 @@ VALUES (1, 'Juan Perez', 'Senador'),
        (2, 'Ana Gomez', 'Diputado'),
        (3, 'Carlos Rodriguez', 'Gobernador'),
        (4, 'Maria Lopez', 'Alcalde');
+GO
 
 -- Insercion en la tabla Partido_Politico
 INSERT INTO Partido_Politico (Codigo_Partido, Nombre, Ano_Fundacion, Numero_Integrantes)
@@ -117,6 +137,7 @@ VALUES (101, 'Partido A', '1990-01-01', 5000),
        (102, 'Partido B', '2000-03-15', 7500),
        (103, 'Partido C', '1995-11-20', 6000),
        (104, 'Partido D', '2005-07-10', 8500);
+GO
 
 -- Insercion en la tabla Candidato
 INSERT INTO Candidato (Codigo_Candidato, Cedula, Nombre, Edad, FK_Cod_Partido)
@@ -124,6 +145,7 @@ VALUES (1001, 50, 'Laura Martinez', 35, 101),
        (1002, 40, 'Roberto Sanchez', 42, 103),
        (1003, 30, 'Elena Garcia', 38, 102),
        (1004, 20, 'Mario Gonzalez', 45, 104);
+GO
 
 -- Insercion en la tabla Asociacion_Candidato_Padrino
 INSERT INTO Asociacion_Candidato_Padrino (Codigo_Asociacion, FK_Cod_Cand, FK_Cod_Padrino)
@@ -131,6 +153,7 @@ VALUES (201, 1001, 1),
        (202, 1002, 2),
        (203, 1003, 3),
        (204, 1004, 4);
+GO
 
 -- Insercion en la tabla HojaDeVida
 INSERT INTO HojaDeVida (Codigo_HojaDeVida, Senador, Ano_Inicio_Candidato, Cant_Suspensiones, FK_Cod_Cand)
@@ -138,18 +161,21 @@ VALUES (301, 'No', '2010-01-01', 0, 1001),
        (302, 'Si', '2015-02-15', 2, 1002),
        (303, 'No', '2009-06-20', 1, 1003),
        (304, 'Si', '2018-11-10', 3, 1004);
+GO
 
 -- Insercion en la tabla LugaresVotacion
-INSERT INTO LugaresVotacion (Codigo_Lugar, Nombre)
+INSERT INTO LugaresVotacion (Codigo_Lugar, Nombre, Direccion, Departamento, Municipio)
 VALUES 
-    (501, 'Colegio A'),
-    (502, 'Instituto B'),
-    (503, 'Escuela C'),
-    (504, 'Centro Comunitario D'),
-    (505, 'Colegio San Jose'),
-    (506, 'Colegio La Salle'),
-    (507, 'Institucion Educativa Antioquia'),
-    (508, 'Colegio Pio XII');
+    (501, 'Colegio Pedro Claver Aguirre', 'Calle 123 #45-67', 'Cundinamarca', 'Bogotá'),
+    (502, 'Colegio Maria Montessori', 'Carrera 56 #78-90', 'Antioquia', 'Medellín'),
+    (503, 'Colegio Dinamarca', 'Avenida 12 #34-56', 'Valle del Cauca', 'Cali'),
+    (504, 'Institucion Maria Cano', 'Calle 78 #23-45', 'Atlántico', 'Barranquilla'),
+    (505, 'Colegio San Jose', 'Carrera 34 #67-89', 'Santander', 'Bucaramanga'),
+    (506, 'Colegio La Salle', 'Calle 45 #90-12', 'Cundinamarca', 'Chía'),
+    (507, 'Institucion Educativa Antioquia', 'Carrera 89 #12-34', 'Antioquia', 'Envigado'),
+    (508, 'Colegio Pio XII', 'Calle 23 #56-78', 'Valle del Cauca', 'Palmira');
+GO
+
 
 -- Insercion en la tabla Institucion_Oficial
 INSERT INTO Institucion_Oficial (Codigo_Ins_Ofi, Grado_Max_Estudio)
@@ -157,6 +183,7 @@ VALUES (501, 08),
        (502, 09),
        (503, 10),
        (504, 11);
+GO
 
 -- Insercion en la tabla Institucion_Educativa
 INSERT INTO Institucion_Educativa (Codigo_Ins_Edu, Numero_Rad_Fundacion)
@@ -164,6 +191,7 @@ VALUES (505, 12345),
        (506, 67890),
        (507, 54321),
        (508, 98765);
+GO
 
 -- Insercion en la tabla Elector
 INSERT INTO Elector (Cedula, Edad, Nombre, FK_Cod_Cand, FK_Cod_Lug_Vot)
@@ -176,19 +204,20 @@ VALUES
     (100006, 48, 'Marcelo Soto', 1002, 506),
     (100007, 29, 'Luisa Medina', 1003, 507),
     (100008, 50, 'Miguel Castro', 1004, 508);
+GO
 
 -- Insercion en la tabla Jurado
-INSERT INTO Jurado (Cedula, Nombre, FK_Cod_Lug_Vot)
+INSERT INTO Jurado (Cedula, Nombre, Rol, FK_Cod_Lug_Vot)
 VALUES 
-    (200001, 'Andres Gutierrez', 501),
-    (200002, 'Camilo Martinez', 502),
-    (200003, 'Juliana Arboleda', 503),
-    (200004, 'Daniel Gonzales', 504),
-    (200005, 'Ana Lopez', 505),
-    (200006, 'Pablo Rios', 506),
-    (200007, 'Isabel Mendoza', 507),
-    (200008, 'Luis Rodriguez', 508);
-
+    (200001, 'Andres Gutierrez', 'Presidente de Mesa', 501),
+    (200002, 'Camilo Martinez', 'Secretario de Mesa', 502),
+    (200003, 'Juliana Arboleda', 'Escrutador', 503),
+    (200004, 'Daniel Gonzales', 'Escrutador', 504),
+    (200005, 'Ana Lopez', 'Presidente de Mesa', 505),
+    (200006, 'Pablo Rios', 'Secretario de Mesa', 506),
+    (200007, 'Isabel Mendoza', 'Secretario de Mesa', 507),
+    (200008, 'Luis Rodriguez', 'Secretario de Mesa', 508);
+GO
 
 -- Insercion en la tabla MesaVotacion
 INSERT INTO MesaVotacion (Numero_Mesa, Tamano, Ubicacion_Institucion, FK_Cod_Lug_Vot)
@@ -201,8 +230,7 @@ VALUES
     (6, 5, 'Salon 3', 506),
     (7, 3, 'Patio', 507),
     (8, 5, 'Sala de Profesores', 508);
-
-
+GO
 
 -- Crear Check constraint necesarios
 
@@ -211,40 +239,49 @@ VALUES
 --en el país.
 
 ALTER TABLE Elector ADD CHECK (Edad >= 18 And Edad <=70)
+GO
 
 --Justificación: Esta restricción asegura que el año de fundación del partido no sea en el futuro y esté limitado 
 --a la fecha actual o anterior. Evita la entrada de datos incorrectos o futuros.
 
 ALTER TABLE Partido_Politico ADD CHECK (Año_Fundacion <= YEAR(GETDATE()))
+GO
 
 --El número de jurados de votación por mesa está regulado por la Ley 1625 de 2013 y su Decreto Reglamentario 19 de 2014. 
 --Según esta normativa, cada mesa de votación debe estar conformada por un mínimo de tres jurados y un máximo de cinco jurados de votación. 
 
 ALTER TABLE Mesas_Votacion ADD CHECK (Tamano >= 3 And Tamaño <=5)
+GO
 
 --La cantidad máxima de suspensiones que puede tener un candidato está regulada por la Ley 1475 de 2011, 
 --que establece el régimen de partidos y movimientos políticos.
 --Según esta ley, un candidato puede ser suspendido en un máximo de tres ocasiones durante su proceso de candidatura. 
 
 ALTER TABLE HojaDeVida ADD CHECK (Cant_Suspensiones >= 0 And Cant_Suspensiones <= 3)
+GO
 
 --Justificación: Garantiza que el número de radicado de fundación sea un valor positivo y 
 --evita la entrada de datos no válidos para las instituciones educativas.
 
 ALTER TABLE Institucion_Educativa ADD CHECK (Numero_Rad_Fundacion > 0)
+GO
 
 --Justificación: Asegura que el campo "Cédula" en la tabla Jurado tenga una longitud de 7 u 11 dígitos,
 -- ya que en Colombia las cédulas más antiguas tenían un número de 7 digitos mientras que las más actuales 11.
 -- Además asegura que se ingresen valores correctos a la base de datos.
 
 ALTER TABLE Jurado ADD CHECK (LEN(Cedula) IN (7, 11))
+GO
 ALTER TABLE Candidato ADD CHECK (LEN(Cedula) IN (7, 11))
+GO
 ALTER TABLE Elector ADD CHECK (LEN(Cedula) IN (7, 11))
+GO
 
 --La edad mínima y máxima para ser jurado de votación en Colombia está regulada por la Ley 1475 de 2011. 
 --Según esta ley, los ciudadanos colombianos que pueden ser designados como jurados de votación deben tener entre 18 y 70 años de edad. 
 
 ALTER TABLE Jurado ADD CHECK (Edad >= 18 And Edad <=70)
+GO
 
  --Esta restricción es necesaria para mantener la integridad de los datos y evitar errores,
  --ya que los nombres generalmente consisten solo de letras y no deben contener números ni caracteres especiales. 
@@ -252,9 +289,13 @@ ALTER TABLE Jurado ADD CHECK (Edad >= 18 And Edad <=70)
  --facilita la búsqueda y clasificación de datos, y cumple con estándares comunes de almacenamiento de nombres.
 
 ALTER TABLE Candidato ADD CHECK (Nombre NOT LIKE '%[^a-zA-Z]%')
+GO
 ALTER TABLE Padrino_Politico ADD CHECK (Nombre NOT LIKE '%[^a-zA-Z]%')
+GO
 ALTER TABLE Jurado ADD CHECK (Nombre NOT LIKE '%[^a-zA-Z]%')
+GO
 ALTER TABLE Elector ADD CHECK (Nombre NOT LIKE '%[^a-zA-Z]%')
+GO
 
  --Segun la Ley General de Educación de Colombia (Ley 115 de 1994) y sus decretos reglamentarios.
  --Esta ley establece que el sistema educativo colombiano consta de 11 grados de educación básica y media.
@@ -264,6 +305,48 @@ ALTER TABLE Elector ADD CHECK (Nombre NOT LIKE '%[^a-zA-Z]%')
  --y podría generar confusión o incumplimiento de las regulaciones educativas. 
 
  ALTER TABLE Institucion_Oficial ADD CHECK (Grado_Max_Estudio >= 0 And Grado_Max_Estudio <=11)
+
+ --Hacer 4 consultas útiles para el usuario, que implementen los 4 tipos de joins que hay. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Hacer 2 consultas que utilice teoría de conjuntos. Deben ir con su enunciado y producir algún resultado.
+
+--Obtener la lista de cédulas, nombres y edades de electores que votaron en instituciones educativas o en instituciones oficiales.
+
+SELECT Cedula, Nombre, Edad
+FROM Elector
+WHERE FK_Cod_Lug_Vot IN (SELECT Codigo_Ins_Edu FROM Institucion_Educativa)
+UNION
+SELECT Cedula, Nombre, Edad
+FROM Elector
+WHERE FK_Cod_Lug_Vot IN (SELECT Codigo_Ins_Ofi FROM Institucion_Oficial);
+GO
+
+--Encontrar las cédulas, nombres y edades de los electores que votaron en instituciones educativas, pero no en instituciones oficiales.
+
+SELECT Cedula, Nombre, Edad
+FROM Elector
+WHERE FK_Cod_Lug_Vot IN (SELECT Codigo_Ins_Edu FROM Institucion_Educativa)
+EXCEPT
+SELECT Cedula, Nombre, Edad
+FROM Elector
+WHERE FK_Cod_Lug_Vot IN (SELECT Codigo_Ins_Ofi FROM Institucion_Oficial);
+GO
+
 
 
 
