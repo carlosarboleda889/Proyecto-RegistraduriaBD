@@ -303,14 +303,17 @@ GO
 -- ya que en Colombia las cédulas más antiguas tenían un número de 7 digitos mientras que las más actuales 11.
 -- Además asegura que se ingresen valores correctos a la base de datos.
 
-ALTER TABLE Jurado 
+ALTER TABLE Jurado
 ADD CHECK (LEN(CONVERT(VARCHAR, Cedula)) IN (7, 11));
+GO
 
 ALTER TABLE Candidato 
 ADD CHECK (LEN(CONVERT(VARCHAR, Cedula)) IN (7, 11));
+GO
 
 ALTER TABLE Elector 
 ADD CHECK (LEN(CONVERT(VARCHAR, Cedula)) IN (7, 11));
+GO
 
 --La edad mínima y máxima para ser jurado de votación en Colombia está regulada por la Ley 1475 de 2011. 
 --Según esta ley, los ciudadanos colombianos que pueden ser designados como jurados de votación deben tener entre 18 y 70 años de edad. 
@@ -408,7 +411,7 @@ GO
 --En el cuál un elector está interesado en votar.
 
 CREATE VIEW Vista_Padrinos_Por_Candidato AS
-SELECT C.Nombre AS Candidato, 
+SELECT C.Nombre AS 'Candidato', 
        PP.Nombre AS 'Padrino',
        P.Nombre AS 'Partido'
 FROM Candidato C
